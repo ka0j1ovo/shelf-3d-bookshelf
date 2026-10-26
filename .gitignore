@@ -1,0 +1,16 @@
+node_modules/
+.pnpm-store/
+*.log
+
+# generated intermediates (rebuildable from the source docx)
+scripts/books.json
+
+# original source documents stay local only — the site ships their text in js/data.js
+essay/
+recording/
+
+# OS / editor noise
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
