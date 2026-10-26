@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>3D 书架 · 我的文档</title>
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+  <!-- 3D canvas -->
+  <div id="scene-container"></div>
+
+  <!-- top HUD -->
+  <div id="hud">
+    <div class="hud-title">📚 我的书房 · 3D 书架</div>
+    <div class="hud-hint" id="hud-hint">
+      点击书本：抽出 / 打开文档 · 按住拖动书本：调整顺序 · 点击书架侧面屏幕：搜索文档
+    </div>
+  </div>
+
+  <!-- shelf legend -->
+  <div id="legend">
+    <div class="legend-item"><span class="dot" style="background:#7a3a3a"></span>后院书架 · 论文</div>
+    <div class="legend-item"><span class="dot" style="background:#2f5d8a"></span>右侧书架 · 课程记录</div>
+  </div>
+
+  <!-- mobile movement pad (bottom-left) -->
+  <div id="dpad" aria-label="移动">
+    <button type="button" tabindex="-1" class="dpad-btn up" data-key="w" aria-label="前进">▲</button>
+    <button type="button" tabindex="-1" class="dpad-btn left" data-key="a" aria-label="左移">◀</button>
+    <button type="button" tabindex="-1" class="dpad-btn jump" data-jump="1" aria-label="跳跃">跳</button>
+    <button type="button" tabindex="-1" class="dpad-btn right" data-key="d" aria-label="右移">▶</button>
+    <button type="button" tabindex="-1" class="dpad-btn down" data-key="s" aria-label="后退">▼</button>
+  </div>
+
+  <!-- document viewer -->
+  <div id="doc-panel" class="hidden" aria-hidden="true">
+    <button id="doc-close" class="panel-close" title="关闭">✕</button>
+    <article id="doc-content"></article>
+  </div>
+
+  <!-- search screen -->
+  <div id="search-panel" class="hidden" aria-hidden="true">
+    <button id="search-close" class="panel-close" title="关闭">✕</button>
+    <div class="search-head">
+      <h2>🔍 搜索文档</h2>
+      <input id="search-input" type="text" placeholder="输入关键词，例如：三星堆、象牙、考古…" autocomplete="off" />
+    </div>
+    <ul id="search-results"></ul>
+    <p id="search-empty" class="search-empty hidden">没有找到匹配的文档</p>
+  </div>
+
+  <script src="js/vendor/three.min.js"></script>
+  <script src="js/vendor/OrbitControls.js"></script>
+  <script src="js/data.js"></script>
+  <script src="js/main.js"></script>
+</body>
+</html>
