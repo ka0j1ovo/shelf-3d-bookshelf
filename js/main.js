@@ -653,6 +653,9 @@ function buildShelf(bookList, opts) {
 /* ---- build the two shelves against two walls ---- */
 const shelves = [];
 
+// Set to false to keep the recording shelf but take all its books off the shelf.
+const RECORDING_SHELF_STOCKED = false;
+
 // essay shelf: against the back wall, left of centre
 const essayShelf = buildShelf(ESSAY_BOOKS, {
   id: 'essay',
@@ -662,8 +665,10 @@ const essayShelf = buildShelf(ESSAY_BOOKS, {
 });
 shelves.push(essayShelf);
 
-// recording shelf: against the right wall, facing the room (-X)
-const recShelf = buildShelf(REC_BOOKS, {
+// recording shelf: against the right wall, facing the room (-X).
+// It is always built (so the empty bookcase stays in the room) but its books
+// are only put on display when RECORDING_SHELF_STOCKED is true.
+const recShelf = buildShelf(RECORDING_SHELF_STOCKED ? REC_BOOKS : [], {
   id: 'recording',
   position: [ROOM_RIGHT_X - SHELF_D / 2 - 0.18, 0, -1.4],
   rotationY: -Math.PI / 2,
@@ -876,7 +881,9 @@ function doSearch(q) {
   const query = q.trim().toLowerCase();
   if (!query) { searchEmpty.classList.add('hidden'); return; }
   const matches = [];
-  for (const book of BOOKS) {
+  // only search books that are actually on a shelf (taken-down ones are not listed)
+  for (const b of ALL_BOOKS) {
+    const book = b.data;
     const hay = (book.searchText || '').toLowerCase();
     const idx = hay.indexOf(query);
     if (idx >= 0) matches.push({ book, idx });
@@ -1263,7 +1270,8 @@ window.addEventListener('resize', () => {
 /* ============================== HUD ============================== */
 const hudHint = document.getElementById('hud-hint');
 if (hudHint) {
-  hudHint.textContent = `论文 ${ESSAY_BOOKS.length} 本 · 课程记录 ${REC_BOOKS.length} 本 · WASD 走动 / 空格跳跃 / 拖拽空白环视 · 点击书本打开 · 拖动书本排序 · 侧面屏幕搜索`;
+  const recNote = recShelf.books.length ? `课程记录 ${recShelf.books.length} 本` : '课程记录已下架';
+  hudHint.textContent = `论文 ${essayShelf.books.length} 本 · ${recNote} · WASD 走动 / 空格跳跃 / 拖拽空白环视 · 点击书本打开 · 拖动书本排序 · 侧面屏幕搜索`;
 }
 
 console.log('books loaded:', ALL_BOOKS.length,
