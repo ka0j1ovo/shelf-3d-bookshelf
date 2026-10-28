@@ -73,6 +73,10 @@ function bookmark(book) {
 }
 
 for (const shelf of t.shelves) {
+  if (!shelf.books.length) {
+    console.log(`${shelf.id}: shelf is empty (books taken down) — skipping drag check`);
+    continue;
+  }
   faceShelf(shelf, 4.2);
   const book = shelf.books[0];
   // simulate grabbing at the book's projected screen position
