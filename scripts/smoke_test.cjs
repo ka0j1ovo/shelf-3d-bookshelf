@@ -102,8 +102,11 @@ const assert = (cond, msg) => { if (!cond) throw new Error('ASSERT FAILED: ' + m
 
 console.log('books:', t.ALL_BOOKS.length, '| shelves:', t.shelves.length);
 assert(t.shelves.length === 2, 'two shelves');
-assert(t.ESSAY_BOOKS.length === 2, 'essay shelf has 2 books');
-assert(t.REC_BOOKS.length === 33, 'recording shelf has 33 books');
+const essayShelf = t.shelves.find(s => s.id === 'essay');
+const recShelf = t.shelves.find(s => s.id === 'recording');
+assert(essayShelf.books.length === 2, 'essay shelf has 2 books');
+assert(recShelf.books.length === 0, 'recording shelf is currently taken down');
+assert(t.ALL_BOOKS.length === 2, 'only on-shelf books are interactive');
 
 for (const s of t.shelves) {
   const cap = s.layout.slotsPerShelf * s.layout.rows;
@@ -121,8 +124,8 @@ for (const s of t.shelves) {
   assert(0.92 < 1.16, 'book depth < shelf depth');
 }
 
-// click -> out -> open -> close on the recording shelf
-const b0 = t.shelves[1].books[0];
+// click -> out -> open -> close on the essay shelf
+const b0 = essayShelf.books[0];
 t.handleClick(b0);
 assert(t.getState().out === b0.data.id, 'click slides out');
 t.handleClick(b0);
@@ -130,23 +133,29 @@ assert(t.getState().open === b0.data.id, 'second click opens');
 t.closeBook(b0);
 assert(t.getState().open === null && t.getState().out === null, 'close resets');
 
-// switching across shelves works
-const e0 = t.shelves[0].books[0];
-t.handleClick(b0); t.handleClick(b0);   // open a recording book
-t.handleClick(e0);                       // switch to an essay book
-assert(t.getState().open === e0.data.id, 'switch to essay book');
+// switching between books works
+const e0 = essayShelf.books[1];
+t.handleClick(b0); t.handleClick(b0);   // open the first essay book
+t.handleClick(e0);                       // switch to the other
+assert(t.getState().open === e0.data.id, 'switch to another book');
 t.closeBook(e0);
 
 // render every document
 for (const b of t.ALL_BOOKS) t.renderDocument(b.data);
 console.log('rendered', t.ALL_BOOKS.length, 'documents OK');
 
-// search
+// search only covers books currently on a shelf
 t.doSearch('三星堆');
 const n1 = elements['search-results'].children.length;
-assert(n1 >= 1, 'search 三星堆');
+assert(n1 === 0, 'taken-down recording books are not searchable');
+t.doSearch('广告');
+const n2 = elements['search-results'].children.length;
+console.log('search OK (三星堆 ->', n1, ', 广告 ->', n2, ')');
 t.doSearch('不存在的关键词zzz');
 assert(elements['search-results'].children.length === 0, 'no-result search');
-console.log('search OK (三星堆 ->', n1, ')');
+
+// and the essay books are still findable
+t.doSearch('她经济');
+assert(elements['search-results'].children.length >= 1, 'essay content still searchable');
 
 console.log('\nALL TESTS PASSED');
